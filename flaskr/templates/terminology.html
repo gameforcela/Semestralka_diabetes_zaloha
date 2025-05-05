@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminologie</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        nav a {
+            margin: 0 10px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        nav a:hover {
+            background-color: #0056b3;
+        }
+        .section {
+            background-color: white;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #e8f5e9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Terminologie</h1>
+    </header>
+
+    <nav>
+        <a href="{{ url_for('basic_routes.index') }}">Úvodní stránka</a>  
+        <a href="{{ url_for('patient_routes.show_patients_page') }}">Pacienti</a>           
+        <a href="{{ url_for('encounter_routes.encounter') }}">Návšťevy</a>         
+        <a href="{{ url_for('doctor_routes.show_doctors') }}">Lékaři</a>         
+               
+    </nav>
+
+    <!-- Patient Activities Section -->
+    <div class="section">
+        <h2>Aktivita pacienta při měření</h2>
+        <table>
+            <tr>
+                <th>Popis</th>
+                <th>Kód Terminologie</th>
+            </tr>
+            {% for item in patient_activity_terms %}
+            <tr>
+                <td>{{ item.NameTerminology }}</td>
+                <td>{{ item.TerminologyCode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- HbA1c Terms Section -->
+    <div class="section">
+        <h2>HbA1c termíny</h2>
+        <table>
+            <tr>
+                <th>Popis interpretace</th>
+                <th>Kód Terminologie</th>
+            </tr>
+            {% for item in hba1c_terms %}
+            <tr>
+                <td>{{ item.NameOfInterpretation }}</td>
+                <td>{{ item.TerminologyCode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Diagnosis Terms Section -->
+    <div class="section">
+        <h2>Diagnózy</h2>
+        <table>
+            <tr>
+                <th>Název diagnózy</th>
+                <th>Kód Terminologie</th>
+            </tr>
+            {% for diag in diagnose_terms %}
+            <tr>
+                <td>{{ diag.NameOfDiagnosis }}</td>
+                <td>{{ diag.TerminologyCode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Phenotype Terms Section -->
+    <div class="section">
+        <h2>Fenotypy</h2>
+        <table>
+            <tr>
+                <th>Název fenotypu</th>
+                <th>Kód Terminologie</th>
+            </tr>
+            {% for pheno in phenotype_terms %}
+            <tr>
+                <td>{{ pheno.NameOfPhenotype }}</td>
+                <td>{{ pheno.TerminologyCode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <!-- Phenotype Terms Section -->
+    <div class="section">
+        <h2>Glucose typy měření</h2>
+        <table>
+            <tr>
+                <th>Název glukózového měření</th>
+                <th>Kód Terminologie</th>
+            </tr>
+            {% for glucose in glucose_types %}
+            <tr>
+                <td>{{ glucose.Glucosetype}}</td>
+                <td>{{ glucose.TerminologyCode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail pacienta - DIABETES system</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        nav a {
+            margin: 0 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #0056b3;
+        }
+        .content {
+            margin: 50px auto;
+            width: 80%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .content h2 {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .details-table th, .details-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .details-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .details-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .versions-list {
+            margin-top: 30px;
+        }
+        .versions-list h3 {
+            text-align: center;
+        }
+        .versions-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .versions-list li {
+            padding: 8px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+        .versions-list li a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+        .versions-list li a:hover {
+            color: #0056b3;
+        }
+        .edit-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .edit-form button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .edit-form button:hover {
+            background-color: #218838;
+        }
+
+        .card-section {
+        margin-top: 40px;
+    }
+
+    .card-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .card {
+        background-color: #f9f9f9;
+        border-left: 6px solid #4CAF50;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .card h4 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+        color: #2c3e50;
+    }
+
+    .card p {
+        margin: 4px 0;
+        font-size: 15px;
+        color: #555;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 22px;
+        color: #333;
+        border-bottom: 2px solid #4CAF50;
+        display: inline-block;
+        padding-bottom: 5px;    
+    }
+
+     /* Styl pro JSON box */
+     pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DIABETES system</h1>
+    </header>
+
+    <div class="content">
+        <h2>Detail pacienta</h2>
+        
+        <nav>
+            <a href="{{ url_for('basic_routes.index') }}">Úvodní stránka</a>
+            <a href="{{ url_for('patient_routes.show_patients_page') }}">Seznam pacientů</a>
+        </nav>
+
+        <!-- Detail pacienta -->
+        <table class="details-table">
+            <tr>
+                <th>ID</th>
+                <td>{{ patient.idPatient }}</td>
+            </tr>
+            <tr>
+                <th>Rodné číslo</th>
+                <td>{{ patient.PersonalIdentificationNumber }}</td>
+            </tr>
+            <tr>
+                <th>Jméno</th>
+                <td>{{ patient.FirstName }}</td>
+            </tr>
+            <tr>
+                <th>Příjmení</th>
+                <td>{{ patient.Surname }}</td>
+            </tr>
+            <tr>
+                <th>Adresa</th>
+                <td>{{ patient.Address }}</td>
+            </tr>
+            <tr>
+                <th>Datum narození</th>
+                <td>{{ patient.DateOfBirth.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            <tr>
+                <th>Místo narození</th>
+                <td>{{ patient.PlaceOfBirth }}</td>
+            </tr>
+            <tr>
+                <th>Pohlaví</th>
+                <td>{{ 'Žena' if patient.Gender == 0 else 'Muž' }}</td>
+            </tr>
+            <tr>
+                <th>Telefonní číslo</th>
+                <td>{{ patient.PhoneNumber }}</td>
+            </tr>
+            <tr>
+                <th>Verze</th>
+                <td>{{ patient.Version }}</td>
+            </tr>
+            <tr>
+                <th>Datum vytvoření verze</th>
+                <td>{{ patient.DateOfVersionCreation.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            <tr>
+                <th>Předchozí verze ID</th>
+                <td>{{ patient.OldVersion }}</td>
+            </tr>
+        </table>
+
+        <!-- Tlačítko pro úpravy -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="document.getElementById('edit-form').style.display = 'block'">Upravit</button>
+        </div>
+
+        <!-- Tlačítko pro úpravy -->
+        <div style="text-align: center; margin-top: 30px;">
+            <form method="POST" action="{{ url_for('patient_routes.genetare_fihr', id=patient.idPatient) }}">
+            <button type="submit">Generovat FIHR</button>
+            </form>
+        </div>
+
+        <!-- Pokud existuje fihr, zobrazí se -->
+        {% if fihr %}
+        <h2>FIHR Data</h2>
+        <pre>{{ fihr | tojson(indent=2) }}</pre>  <!-- Tento zápis formátuje JSON pro zobrazení -->
+        {% else %}
+        <p>FIHR data nejsou dostupná.</p>
+        {% endif %}
+        
+           <!-- Formulář pro úpravu údajů -->
+        <div id="edit-form" class="edit-form" style="display: none;">
+            <form method="POST" action="{{ url_for('patient_routes.update_patient', id=patient.idPatient) }}">
+                <label for="first_name">Jméno</label>
+                <input type="text" id="first_name" name="first_name" value="{{ patient.FirstName }}" required>
+            
+                <label for="surname">Příjmení</label>
+                <input type="text" id="surname" name="surname" value="{{ patient.Surname }}" required>
+            
+                <label for="address">Adresa</label>
+                <input type="text" id="address" name="address" value="{{ patient.Address }}" required>
+            
+                <label for="phone_number">Telefonní číslo</label>
+                <input type="text" id="phone_number" name="phone_number" value="{{ patient.PhoneNumber }}" required>
+            
+                <button type="submit">Uložit změny</button>
+            </form>
+        </div>
+
+         <!-- Historie návštěv -->
+         <div class="card-section">
+            <h3 class="section-title">Historie návštěv</h3>
+            <div class="card-list">
+                {% for encounter in encounters %}
+                    <div class="card">
+                        <a href="{{ url_for('encounter_routes.show_encounter', id=encounter.idEncounter) }}">
+                        <h4>Návštěva – {{ encounter.DateOfVisit.strftime('%Y-%m-%d') }}</h4>
+                        </a>
+                        <p><strong>Lékař:</strong> {{ encounter.doctor_obj.FirstName }} {{ encounter.doctor_obj.Surname }}</p>
+                        <p><strong>Status:</strong> {{ encounter.status_obj.Name }}</p>
+                    </div>
+                {% else %}
+                    <div class="card"><p>Žádné návštěvy nebyly zaznamenány.</p></div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Historie medikace -->
+        <div class="card-section">
+            <h3 class="section-title">Historie medikace</h3>
+            <div class="card-list">
+                {% for medication in medications %}
+                    <div class="card">
+                        <h4>{{ medication.Medication_obj.MedicationName }}</h4>
+                        <p><strong>Dávkování (R/P/V):</strong> {{ medication.DosageMorning }} / {{ medication.DosageLunch }} / {{ medication.DosageEvening }}</p>
+                        <p><strong>Datum předepsání:</strong> {{ medication.DateOfDistribution.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Návštěva id.:</strong> {{ medication.Encounter_obj.idEncounter }}</p>
+                    </div>
+                {% else %}
+                    <div class="card"><p>Žádné medikace nebyly zaznamenány.</p></div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <!-- Seznam starých verzí -->
+        <div class="versions-list">
+            <h3>Verze záznamů</h3>
+            <ul>
+                {% for old_patient in old_patients %}
+                    <li>
+                        <a href="{{ url_for('patient_routes.show_patient_detail', id=old_patient.idPatient) }}">
+                            Verze {{ old_patient.Version }} - {{ old_patient.DateOfVersionCreation.strftime('%Y-%m-%d') }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li>Žádné staré verze záznamů.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+</body>
+</html>

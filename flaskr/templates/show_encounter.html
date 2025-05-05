@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Návštěva č. {{ encounter.idEncounter }} – DIABETES system</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        nav a {
+            margin: 0 10px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            margin: 40px auto;
+            width: 90%;
+            max-width: 900px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .entry-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .entry-card {
+            background-color: #f9f9f9;
+            padding: 15px 20px;
+            border-left: 5px solid #4CAF50;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .entry-date {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .phenotypes {
+            margin-top: 8px;
+        }
+
+        .phenotypes span {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .phenotypes ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .form-block {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .form-block label {
+            font-weight: bold;
+        }
+
+        .form-block input,
+        .form-block select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-block button {
+            margin-top: 10px;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .form-block button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DIABETES system</h1>
+    </header>
+
+    <nav>
+        <a href="{{ url_for('basic_routes.index') }}">Úvodní stránka</a>
+        <a href="{{ url_for('encounter_routes.encounter') }}">Návšťevy</a> 
+        <a href="{{ url_for('patient_routes.show_patients_page') }}">Seznam pacientů</a>
+    </nav>
+
+    <div class="content">
+        <div class="section">
+            <h2>Návštěva č. {{ encounter.idEncounter }}</h2>
+            <p><strong>Datum:</strong> {{ encounter.DateOfVisit }}</p>
+            <p><strong>Pacient:</strong> {{ patient.FirstName }} {{ patient.Surname }}</p>
+            <p><strong>Pohlaví:</strong> {{ patient.gender_obj.Name }}</p>
+            <p><strong>Doktor:</strong> {{ doctor.FirstName }} {{ doctor.Surname }}</p>
+            <p><strong>Stav návštěvy:</strong> {{ encounter.status_obj.Name }} </p>
+            {% if encounter.Status == 1 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.close_encounter', id=encounter.idEncounter) }}">
+                <button type="submit">Uzavřít návštěvu</button>
+            </form>
+            {% endif %}
+
+        </div>
+
+        <!-- Glukóza -->
+
+        <div class="hemoglobin-list">
+            <h3>Glukóza</h3>
+            <ul>
+                {% for gl in glucose_levels %}
+                    <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; list-style-type: none;">
+                        <strong>{{ gl.GlucoseLevel }}% mmol/L – {{ gl.GlucoseType_obj.Glucosetype }}</strong> 
+                        ({{ gl.MeasurementTime.strftime('%Y-%m-%d') }})                       
+        
+                        {% if gl.Depricated %}
+                            <span style="color: red; font-weight: bold;">(Zrušený)</span>
+                        {% else %}
+                        {% if encounter.Status == 1 %}
+                            <form method="POST" action="{{ url_for('glucose_routes.deprecate_glucose', id=gl.idGlucose) }}" style="display:inline;">
+                                <button type="submit" style="margin-left: 15px; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Označit jako chybový záznam</button>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </li>                
+                {% endfor %}
+            </ul>        
+            {% if encounter.Status == 1 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.add_glucose', id=encounter.idEncounter) }}">
+                <label>Hladina glukózy (mmol/L):</label>
+                <input type="number" name="glucose_level" step="0.1" min="0.1" max="40" required>
+                <label>Typ měření:</label>
+                <select name="type" required>
+                    <option value="">Vyber typ</option>
+                    {% for t in glucose_types %}
+                        <option value="{{ t.idGlucoseType }}">{{ t.Glucosetype }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="doctor_id" value="{{ doctor.idDoctor }}">
+                <button type="submit">Přidat glukózu</button>
+            </form>
+            {% endif %}
+        </div>
+
+         <!-- HbA1c -->
+        <div class="hemoglobin-list">
+            <h3>HbA1c</h3>
+            <ul>
+                {% for record in hba1c_results %}
+                    <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; list-style-type: none;">
+                        <strong>{{ record.HbA1c_value }}%</strong> 
+                        ({{ record.MeasurementTime.strftime('%Y-%m-%d') }})
+                        - {{ record.Interpretation_obj.Name }}
+        
+                        {% if record.Depricated %}
+                            <span style="color: red; font-weight: bold;">(Zrušený)</span>
+                        {% else %}
+                        {% if encounter.Status == 1 %}
+                            <form method="POST" action="{{ url_for('hemoglobin_routes.deprecate_hemoglobin', id=record.idHemoglobin) }}" style="display:inline;">
+                                <button type="submit" style="margin-left: 15px; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Označit jako chybový záznam</button>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </li>             
+                {% endfor %}
+            </ul>
+        
+       
+          {% if encounter.Status == 1 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.add_hemoglobin', id=encounter.idEncounter) }}">
+                <label>HbA1c (%):</label>
+                <input type="number" step="0.5" name="hba1c_value" min="0.5" max="30" required>
+                <input type="hidden" name="doctor_id" value="{{ doctor.idDoctor }}">
+                <button type="submit">Přidat HbA1c</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Krevní tlak -->
+        <div class="hemoglobin-list">
+            <h3>Krevní tlak</h3>
+            <ul>
+                {% for bp in blood_pressures %}
+                    <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; list-style-type: none;">
+                        <strong>{{ bp.Systolic }}/{{ bp.Diastolic }} mmHg – {{ bp.PatientActivity_obj.NameTerminology }}</strong> 
+                        ({{ bp.MeasurementTime.strftime('%Y-%m-%d') }})                    
+        
+                        {% if bp.Depricated %}
+                            <span style="color: red; font-weight: bold;">(Zrušený)</span>
+                        {% else %}
+                        {% if encounter.Status == 1 %}
+                            <form method="POST" action="{{ url_for('bloodpresur_routes.deprecate_bloodpresur', id=bp.idBloodPressure) }}" style="display:inline;">
+                                <button type="submit" style="margin-left: 15px; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Označit jako chybový záznam</button>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </li>                
+                {% endfor %}
+            </ul>   
+
+            {% if encounter.Status == 1 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.add_bloodpresure', id=encounter.idEncounter) }}">
+                <label>Systolický tlak (mmHg):</label>
+                <input type="number" step="1" name="Systolic" min="40" max="250" required>
+                <label>Diastolický tlak (mmHg):</label>
+                <input type="number" step="1" name="Diastolic" min="30" max="150" required>
+                <label>Aktivita pacienta:</label>
+                <select name="Activity" required>
+                    <option value="">Vyber aktivitu</option>
+                    {% for t in pacient_activity %}
+                        <option value="{{ t.idActivity }}">{{ t.NameTerminology }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="doctor_id" value="{{ doctor.idDoctor }}">
+                <button type="submit">Přidat krevní tlak</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- BMI -->
+        <div class="section-list">
+            <h3>Index tělesné hmotnosti (BMI)</h3>
+            <ul>
+                {% for bmi in bmis %}
+                    <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; list-style-type: none;">
+                        <strong>BMI: {{ bmi.BMI | round(1) }} ({{ bmi.Weight }} kg / {{ bmi.Height }} cm)</strong> 
+                        ({{ bmi.MeasurementTime.strftime('%Y-%m-%d') }})                    
+        
+                        {% if bmi.Depricated %}
+                            <span style="color: red; font-weight: bold;">(Zrušený)</span>
+                        {% else %}
+                        {% if encounter.Status == 1 %}
+                            <form method="POST" action="{{ url_for('bmi_routes.deprecate_bmi', id=bmi.idBMI) }}" style="display:inline;">
+                                <button type="submit" style="margin-left: 15px; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Označit jako chybový záznam</button>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </li>                
+                {% endfor %}
+            </ul>  
+            {% if encounter.Status == 1 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.add_bmi', id=encounter.idEncounter) }}">
+                <label>Hmotnost (kg):</label>
+                <input type="number" step="1" name="Weight" min="30" max="500" required>
+                <label>Výška (cm):</label>
+                <input type="number" step="1" name="Height" min="100" max="250" required>
+                <input type="hidden" name="doctor_id" value="{{ doctor.idDoctor }}">
+                <button type="submit">Přidat BMI</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Diagnózy -->
+        <div class="section-list">
+            <h3>Diagnózy</h3>
+            <ul>
+                {% for dg in diagnoses %}
+                    <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; list-style-type: none;">
+                        <strong>{{ dg.DiagnosisTerm_obj.NameOfDiagnosis }}</strong> 
+                        ({{ dg.MeasurementTime.strftime('%Y-%m-%d') }})    
+                        
+                        {% if dg.DiagnosePhenotype %}
+                            <div class="phenotypes">
+                                <span>Fenotypy:</span>
+                                <ul>
+                                    {% for dp in dg.DiagnosePhenotype %}
+                                        <li>{{ dp.PhenotypeTerm_obj.NameOfPhenotype }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+        
+                        {% if dg.Depricated %}
+                            <span style="color: red; font-weight: bold;">(Zrušený)</span>
+                        {% else %}
+                        {% if encounter.Status == 1 %}
+                            <form method="POST" action="{{ url_for('diagnosis_routes.deprecate_diagnosis', id=dg.idDiagnosis) }}" style="display:inline;">
+                                <button type="submit" style="margin-left: 15px; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Označit jako chybový záznam</button>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </li>                
+                {% endfor %}
+            </ul>         
+            {% if encounter.Status == 1 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.add_diagnosis', id=encounter.idEncounter) }}">
+                <label>Diagnóza:</label>
+                <select name="diagnosis_term" required>
+                    <option value="">Vyber diagnózu</option>
+                    {% for term in diagnosis_terms %}
+                        <option value="{{ term.idDiagnosisTerm }}">{{ term.NameOfDiagnosis }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Fenotypy:</label>
+                <select name="phenotypes" multiple>
+                    {% for pt in phenotype_terms %}
+                        <option value="{{ pt.idPhenotype }}">{{ pt.NameOfPhenotype }}</option>
+                    {% endfor %}
+                </select>
+
+                <input type="hidden" name="doctor_id" value="{{ doctor.idDoctor }}">
+                <button type="submit">Přidat diagnózu</button>
+            </form>
+            {% endif %}
+        </div>
+
+
+              <!-- Medikace -->
+
+              <div class="section-list">
+                <h3>Medikace naordinována během návštěvy</h3>
+                <ul>
+                    {% for med in medications_history %}
+                        <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; list-style-type: none;">
+                            <strong>{{ med.Medication_obj.MedicationName }}</strong> 
+                            ({{ med.DateOfDistribution.strftime('%Y-%m-%d') }})    
+                            
+                            <div class="phenotypes">
+                                <span>Dávky:</span>
+                                <ul>
+                                    <li><strong>Ráno:</strong> {{ med.DosageMorning }} mg</li>
+                                    <li><strong>Poledne:</strong> {{ med.DosageLunch }} mg</li>
+                                    <li><strong>Večer:</strong> {{ med.DosageEvening }} mg</li>
+                                </ul>
+                            </div>
+            
+                            {% if med.Depricated %}
+                                <span style="color: red; font-weight: bold;">(Zrušený)</span>
+                            {% else %}
+                            {% if encounter.Status == 1 %}
+                                <form method="POST" action="{{ url_for('medication_list_routes.deprecate_medication_list', id=med.idMedicationList) }}" style="display:inline;">
+                                    <button type="submit" style="margin-left: 15px; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Označit jako chybový záznam</button>
+                                </form>
+                            {% endif %}
+                            {% endif %}
+                        </li>                
+                    {% endfor %}
+                </ul>       
+ 
+                {% if encounter.Status == 1 %}
+                <form class="form-block" method="POST" action="{{ url_for('encounter_routes.add_medication', id=encounter.idEncounter) }}">
+                    <label>Lék:</label>
+                    <select name="medication_id" required>
+                        <option value="">Vyber medikaci</option>
+                        {% for med in all_medications %}
+                            <option value="{{ med.idMedication }}">{{ med.MedicationName }}</option>
+                        {% endfor %}
+                    </select>
+    
+                    <label for="dosage_morning">Dávka ráno (mg):</label>
+                    <input type="number" name="dosage_morning" min="0" max="1000" step="1" placeholder="Např. 500">
+    
+                    <label for="dosage_lunch">Dávka poledne (mg):</label>
+                    <input type="number" name="dosage_lunch" min="0" max="1000" step="1" placeholder="Např. 0">
+    
+                    <label for="dosage_evening">Dávka večer (mg):</label>
+                    <input type="number" name="dosage_evening" min="0" max="1000" step="1" placeholder="Např. 500">
+    
+                    <input type="hidden" name="doctor_id" value="{{ doctor.idDoctor }}">
+                    <button type="submit">Přidat medikaci</button>
+                </form>
+                {% endif %}
+            </div>
+
+         <!-- Historie návštěv -->
+         <div class="card-section">
+            <h3 class="section-title">Historie návštěv</h3>
+            <div class="card-list">
+                {% for encounter in encounters %}
+                    <div class="card">
+                        <a href="{{ url_for('encounter_routes.show_encounter', id=encounter.idEncounter) }}">
+                        <h4>Návštěva – {{ encounter.DateOfVisit.strftime('%Y-%m-%d') }}</h4>
+                        </a>
+                        <p><strong>Lékař:</strong> {{ encounter.doctor_obj.FirstName }} {{ encounter.doctor_obj.Surname }}</p>
+                        <p><strong>Status:</strong> {{ encounter.status_obj.Name }}</p>
+                    </div>
+                {% else %}
+                    <div class="card"><p>Žádné návštěvy nebyly zaznamenány.</p></div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>

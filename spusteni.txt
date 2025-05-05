@@ -1,0 +1,5 @@
+.venv\Scripts\activate.bat
+cd flaskr
+python -m flask  run --debug 
+
+# python -m flask --app flaskr run --debug   #old was when app is on different place
