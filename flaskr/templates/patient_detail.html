@@ -155,6 +155,12 @@
             overflow-x: auto;
             white-space: pre-wrap;
         }
+
+    .deprecated {
+        border-left-color: red !important;
+        background-color: #ffe6e6;
+    }
+    
     </style>
 </head>
 <body>
@@ -202,7 +208,7 @@
             </tr>
             <tr>
                 <th>Pohlaví</th>
-                <td>{{ 'Žena' if patient.Gender == 0 else 'Muž' }}</td>
+                <td>{{ 'Žena' if patient.Gender == 1 else 'Muž' }}</td>
             </tr>
             <tr>
                 <th>Telefonní číslo</th>
@@ -227,21 +233,11 @@
             <button onclick="document.getElementById('edit-form').style.display = 'block'">Upravit</button>
         </div>
 
-        <!-- Tlačítko pro úpravy -->
+        <!-- Tlačítko pro FIHR -->
         <div style="text-align: center; margin-top: 30px;">
-            <form method="POST" action="{{ url_for('patient_routes.genetare_fihr', id=patient.idPatient) }}">
-            <button type="submit">Generovat FIHR</button>
-            </form>
+            <button onclick="document.getElementById('fihr-data').style.display = 'block'">Zobrazit FIHR</button>
         </div>
 
-        <!-- Pokud existuje fihr, zobrazí se -->
-        {% if fihr %}
-        <h2>FIHR Data</h2>
-        <pre>{{ fihr | tojson(indent=2) }}</pre>  <!-- Tento zápis formátuje JSON pro zobrazení -->
-        {% else %}
-        <p>FIHR data nejsou dostupná.</p>
-        {% endif %}
-        
            <!-- Formulář pro úpravu údajů -->
         <div id="edit-form" class="edit-form" style="display: none;">
             <form method="POST" action="{{ url_for('patient_routes.update_patient', id=patient.idPatient) }}">
@@ -261,17 +257,33 @@
             </form>
         </div>
 
+                <!-- Pokud existuje fihr, zobrazí se -->
+                {% if fihr %}
+                <div id="fihr-data" style="display: none;">
+                    <h2>FIHR Data</h2>
+                    <pre>{{ fihr | safe }}</pre>  <!-- Tento zápis formátuje JSON pro zobrazení -->
+                    {% else %}
+                    <p>FIHR data nejsou dostupná.</p>
+                    {% endif %}
+                </div>
+
          <!-- Historie návštěv -->
          <div class="card-section">
             <h3 class="section-title">Historie návštěv</h3>
-            <div class="card-list">
+            <div class="card-list">                
                 {% for encounter in encounters %}
-                    <div class="card">
+                    {% if encounter.Status == 3 %}
+                    <div class="card deprecated">     
+                    <h4 style="color: red; font-weight: bold;">Vymazaný záznam</h4>
+                    {% else %}   
+                    <div class="card">    
+                    {% endif %}                            
                         <a href="{{ url_for('encounter_routes.show_encounter', id=encounter.idEncounter) }}">
                         <h4>Návštěva – {{ encounter.DateOfVisit.strftime('%Y-%m-%d') }}</h4>
                         </a>
                         <p><strong>Lékař:</strong> {{ encounter.doctor_obj.FirstName }} {{ encounter.doctor_obj.Surname }}</p>
                         <p><strong>Status:</strong> {{ encounter.status_obj.Name }}</p>
+                        
                     </div>
                 {% else %}
                     <div class="card"><p>Žádné návštěvy nebyly zaznamenány.</p></div>
@@ -284,7 +296,12 @@
             <h3 class="section-title">Historie medikace</h3>
             <div class="card-list">
                 {% for medication in medications %}
-                    <div class="card">
+                    {% if medication.Depricated == True %}
+                    <div class="card deprecated">     
+                    <h4 style="color: red; font-weight: bold;">Vymazaný záznam</h4>
+                    {% else %}   
+                    <div class="card">    
+                    {% endif %}  
                         <h4>{{ medication.Medication_obj.MedicationName }}</h4>
                         <p><strong>Dávkování (R/P/V):</strong> {{ medication.DosageMorning }} / {{ medication.DosageLunch }} / {{ medication.DosageEvening }}</p>
                         <p><strong>Datum předepsání:</strong> {{ medication.DateOfDistribution.strftime('%Y-%m-%d') }}</p>

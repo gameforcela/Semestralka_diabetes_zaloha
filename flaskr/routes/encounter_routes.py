@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, render_template, abort, redirect, url_for
 from models import db, Encounter, BloodPressure, MedicationList, Medication, GlucoseLevel,DiagnosePhenotype, PhenotypeTerm, HemoglobinA1c, BMI, Patient, Doctor, Diagnosis,DiagnosisTerm, GlucoseType, PatientActivityTerm
 from datetime import datetime
+from generete_fihr import generate_fhir_json
 
 # Definování Blueprintu pro pacientské trasy
 encounter_routes = Blueprint('encounter_routes', __name__)
@@ -70,6 +71,8 @@ def show_encounter(id):
     all_medications = Medication.query.all()
 
     medications_history = MedicationList.query.filter(MedicationList.Encounter == id).all()
+
+    fihr_encounter = generate_fhir_json(id)
     
 
     return render_template(
@@ -88,7 +91,8 @@ def show_encounter(id):
         phenotype_terms=phenotype_terms,       
         all_medications=all_medications,
         medications_history=medications_history,
-        encounters=encounters
+        encounters=encounters,
+        fihr_encounter=fihr_encounter
     )
 
 @encounter_routes.route('/encounter/close/<int:id>', methods=['POST'])
@@ -104,6 +108,17 @@ def close_encounter(id):
         db.session.commit()
 
     # Přesměrování zpět na stránku s podrobnostmi o návštěvě
+    return redirect(url_for('encounter_routes.show_encounter', id=id))
+
+@encounter_routes.route('/encounter/<int:id>/deprecate', methods=['POST'])
+def deprecate_encounter(id):
+    # Získání návštěvy podle ID
+    encounter = Encounter.query.get_or_404(id)
+    
+    # Změna statusu na "depricated" (musíte mít definovaný status "depricated" v databázi)
+    encounter.Status = 3  # Předpokládám, že 2 znamená "depricated" v databázi
+
+    db.session.commit()    
     return redirect(url_for('encounter_routes.show_encounter', id=id))
 
 

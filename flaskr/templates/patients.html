@@ -107,7 +107,7 @@
                         <td>{{ patient.Surname }}</td>                        
                         <td>{{ patient.DateOfBirth.strftime('%Y-%m-%d') }}</td>
                         <td>{{ patient.PlaceOfBirth }}</td>
-                        <td>{{ 'Žena' if patient.Gender == 0 else 'Muž' }}</td>
+                        <td>{{ 'Žena' if patient.Gender == 1 else 'Muž' }}</td>
                         <td>{{ patient.Version }}</td>
                         <td>{{ patient.DateOfVersionCreation.strftime('%Y-%m-%d %H:%M:%S') if patient.DateOfVersionCreation else 'N/A' }}</td>
                         <td><a href="{{ url_for('patient_routes.show_patient_detail', id=patient.idPatient) }}">Zobrazit detaily</a></td>

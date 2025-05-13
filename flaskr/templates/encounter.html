@@ -161,6 +161,7 @@
                     <tr>
                         <th>Číslo návštěvy</th>
                         <th>Datum</th>
+                        <th>Pacient</th>
                         <th>Doktor</th>
                         <th>Status</th>
                     </tr>
@@ -170,12 +171,13 @@
                     <tr>
                         <td><a href="{{ url_for('encounter_routes.show_encounter', id=e.idEncounter) }}">{{ e.idEncounter }}</a></td>
                         <td>{{ e.DateOfVisit.strftime("%Y-%m-%d") }}</td>
+                        <td>{{ e.pacient_obj.FirstName }} {{ e.pacient_obj.Surname }}</td>
                         <td>{{ e.doctor_obj.FirstName }} {{ e.doctor_obj.Surname }}</td>
                         <td>{{ e.status_obj.Name }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
+</table>
         </div>
         {% endif %}
     </div>

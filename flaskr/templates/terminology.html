@@ -67,9 +67,8 @@
     <nav>
         <a href="{{ url_for('basic_routes.index') }}">Úvodní stránka</a>  
         <a href="{{ url_for('patient_routes.show_patients_page') }}">Pacienti</a>           
-        <a href="{{ url_for('encounter_routes.encounter') }}">Návšťevy</a>         
+        <a href="{{ url_for('encounter_routes.encounter') }}">Návštěvy</a>         
         <a href="{{ url_for('doctor_routes.show_doctors') }}">Lékaři</a>         
-               
     </nav>
 
     <!-- Patient Activities Section -->
@@ -140,8 +139,7 @@
         </table>
     </div>
 
-
-    <!-- Phenotype Terms Section -->
+    <!-- Glucose Types Section -->
     <div class="section">
         <h2>Glucose typy měření</h2>
         <table>
@@ -157,5 +155,74 @@
             {% endfor %}
         </table>
     </div>
+
+    <!-- Medication Route Section -->
+    <div class="section">
+        <h2>Způsob podání medikace</h2>
+        <table>
+            <tr>
+                <th>Popis podání</th>
+                <th>Kód Terminologie</th>
+            </tr>
+            {% for route in medication_routes %}
+            <tr>
+                <td>{{ route.RouteName }}</td>
+                <td>{{ route.TerminologyCode }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Medication Section -->
+    <div class="section">
+        <h2>Medikace pro diabetes</h2>
+        <table>
+            <tr>
+                <th>Název medikace</th>
+                <th>Způsob podání</th>
+                <th>Indikace</th>
+                <th>Kontraindikace</th>
+            </tr>
+            {% for medication in medications %}
+            <tr>
+                <td>{{ medication.MedicationName }}</td>
+                <td>{{ medication.medication_route.RouteName }}</td>
+                <td>{{ medication.diagnosis_term.NameOfDiagnosis }}</td>
+                <td>{{ medication.Contraindication }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Encounter Status Section -->
+    <div class="section">
+        <h2>Status návštěvy</h2>
+        <table>
+            <tr>
+                <th>Stav návštěvy</th>
+            </tr>
+            {% for status in encounter_status %}
+            <tr>
+                <td>{{ status.Name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Gender Section -->
+    <div class="section">
+        <h2>Gender</h2>
+        <table>
+            <tr>
+                <th>Popis</th>
+            </tr>
+            {% for gender in genders %}
+            <tr>
+                <td>{{ gender.Name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+   
 </body>
 </html>

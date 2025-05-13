@@ -135,7 +135,7 @@ def add_status_encounter():
             Name="Closed",
         )
         status3 = EncounterStatus(            
-            Name="Failed",
+            Name="Depricated",
         )
 
         # Add doctors to the session and commit to the database

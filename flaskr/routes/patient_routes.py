@@ -3,6 +3,7 @@ from models import db, Patient, Encounter, MedicationList
 from datetime import datetime
 from generete_fihr import patient_to_fhir
 
+
 # Definování Blueprintu pro pacientské trasy
 patient_routes = Blueprint('patient_routes', __name__)
 
@@ -86,7 +87,6 @@ def show_patient_detail(id):
     # Historie medikace
 
     fihr = patient_to_fhir(patient)
-
     
         # Zobrazení šablony s daty
     return render_template(
@@ -154,22 +154,6 @@ def update_patient(id):
         db.session.rollback()
         return jsonify({"error": f"Chyba při aktualizaci pacienta: {str(e)}"}), 500
 
-# Endpoint pro aktualizaci pacienta (nová verze pacienta)
-@patient_routes.route('/patients/fihr/<int:id>', methods=['POST'])
-def genetare_fihr(id):
-    
-    patient = Patient.query.get(id)
-    fihr = jsonify(patient_to_fhir(patient))   
-
-    fihr = {
-        "resourceType": "Patient",
-        "id": str(patient.idPatient)
-    }
-
-    fihr = jsonify(fihr)   
-   
-
-    return redirect(url_for('patient_routes.show_patient_detail', id=id, fihr=fihr))
 
 #--API------------------------------------
 

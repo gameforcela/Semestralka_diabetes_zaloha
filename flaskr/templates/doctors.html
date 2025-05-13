@@ -104,8 +104,16 @@
                 {% for doctor in doctors %}
                     <tr>
                         <td>{{ doctor.idDoctor }}</td>
-                        <td>{{ doctor.FirstName }}</td>
-                        <td>{{ doctor.Surname }}</td>
+                        <td>
+                            <a href="{{ url_for('doctor_routes.doctor_detail', doctor_id=doctor.idDoctor) }}" style="color: #007BFF; text-decoration: none;">
+                                {{ doctor.FirstName }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('doctor_routes.doctor_detail', doctor_id=doctor.idDoctor) }}" style="color: #007BFF; text-decoration: none;">
+                                {{ doctor.Surname }}
+                            </a>
+                        </td>
                         <td>{{ doctor.Address }}</td>
                         <td>{{ doctor.PhoneNumber }}</td>
                         <td>{{ doctor.DateOfBirth.strftime('%Y-%m-%d') }}</td>

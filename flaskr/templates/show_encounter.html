@@ -159,13 +159,42 @@
             <p><strong>Pacient:</strong> {{ patient.FirstName }} {{ patient.Surname }}</p>
             <p><strong>Pohlaví:</strong> {{ patient.gender_obj.Name }}</p>
             <p><strong>Doktor:</strong> {{ doctor.FirstName }} {{ doctor.Surname }}</p>
-            <p><strong>Stav návštěvy:</strong> {{ encounter.status_obj.Name }} </p>
+            <p><strong>Stav návštěvy:</strong> 
+                {% if encounter.Status == 3 %}
+                    <span style="color: red; font-weight: bold;">{{ encounter.status_obj.Name }}</span>
+                {% else %}
+                    {{ encounter.status_obj.Name }}
+                {% endif %}
+            </p>
             {% if encounter.Status == 1 %}
             <form class="form-block" method="POST" action="{{ url_for('encounter_routes.close_encounter', id=encounter.idEncounter) }}">
                 <button type="submit">Uzavřít návštěvu</button>
             </form>
             {% endif %}
 
+        </div>
+
+        {% if encounter.Status == 2 %}
+            <form class="form-block" method="POST" action="{{ url_for('encounter_routes.deprecate_encounter', id=encounter.idEncounter) }}">
+                <button type="submit" style="margin-top: 20px; background-color: #dc3545; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer;">
+                    Označit jako zastaralou
+                </button>
+            </form>
+        {% endif %}
+
+         <!-- Tlačítko pro FIHR -->
+         <div style="text-align: center; margin-top: 30px;">
+            <button onclick="document.getElementById('fihr-data').style.display = 'block'">Zobrazit FIHR</button>
+        </div>
+
+        <!-- Pokud existuje fihr, zobrazí se -->
+        {% if fihr_encounter %}
+        <div id="fihr-data" style="display: none;">
+            <h2>FIHR Data</h2>
+            <pre>{{ fihr_encounter | safe }}</pre>  <!-- Tento zápis formátuje JSON pro zobrazení -->
+            {% else %}
+            <p>FIHR data nejsou dostupná.</p>
+            {% endif %}
         </div>
 
         <!-- Glukóza -->
